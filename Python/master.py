@@ -20,9 +20,10 @@ UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
+#192.168.50.91
 def connection():
     conn = pymysql.connect(
-        host='127.0.0.1',
+        host='192.168.50.91',
         user='root',
         password='qwer1234',
         charset='utf8',
@@ -56,13 +57,13 @@ async def get_file(file_name : str):
 
 # insert
 @app.get('/insert')
-async def insert(name:str=None, phone:str=None, lat:str=None, longtitude:str=None, image:str=None, estimate:str=None, user_id:str =None):
+async def insert(name:str=None, phone:str=None, latitude:str=None, longtitude:str=None, image:str=None, estimate:str=None, user_id:str =None):
     conn = connection()
     curs = conn.cursor()
     
     try:
-        sql = "insert into restaurant(name, phone, lat, longtitude, image, estimate, user_id) values (%s,%s,%s,%s,%s,%s,%s)"
-        curs.execute(sql,(name,phone,lat,longtitude,image,estimate,user_id))
+        sql = "insert into restaurant(name, phone, latitude, longtitude, image, estimate, user_id) values (%s,%s,%s,%s,%s,%s,%s)"
+        curs.execute(sql,(name,phone,latitude,longtitude,image,estimate,user_id))
         conn.commit()
         conn.close()
         return {'result': "ok"}
@@ -121,35 +122,57 @@ async def updateAll(seq = str,name:str=None, phone:str=None,image:str=None, esti
         return {'result' : 'error'}
     
 
-# 이미지 수정할 때
-# 이미지 파일 삭제 후 다시 업로드하기
-@app.delete('/deleteFile/{file_name}')
-async def delete_file(file_name:str):
-    try:
-        file_path = os.path.join(UPLOAD_FOLDER, file_name)
-        if os.path.exists(file_path):
-            os.remove(file_path)
-        return {'result': 'ok'}
-    except Exception as e:
-        print("Error:",e)
-        return {'result':'error'}
+# test data : yubee 333/ jangbee 111 / gwanwoo 123
 
-@app.get('/remove')
-async def remove(seq : str):
-    delete_file
+@app.get("/item/{item_id}")
+async def read_item(item_id : int, query_param : str = None): # FastAPI는 parameter받음 <-> Flask는 request 사용
+    return{ "item id" : item_id, "query_param" : query_param}
+
+# 회원가입 페이지 - id확인(중복검사) : select
+@app.get('/check')
+async def idcheck(id : str):
     conn = connection()
     curs = conn.cursor()
 
-    try: 
-        sql = 'delete from restuarant where seq=%s'
-        curs.execute(sql,(seq))
+    sql = 'select count(id) from user where id=%s'
+    curs.execute(sql,(id))
+    rows = curs.fetchall()
+    conn.close()
+    print(rows[0][0])
+    return {'result': rows[0][0]}
+
+
+# 회원가입 완료 - id, pw입력 : insert
+@app.get('/signup')
+async def insertUser(id :str, pw : str):
+    conn = connection()
+    curs = conn.cursor()
+
+    try:
+        sql = 'insert into user(id, pw) values (%s,%s)'
+        curs.execute(sql,(id,pw))
         conn.commit()
         conn.close()
         return {'result' : 'ok'}
     except Exception as e:
         conn.close()
-        print('Error:',e)
-        return {'result' : 'error'}
+        print('Error:', e)
+        return {'result' : 'Error'} 
+    
+
+# 로그인 - id, pw 확인 - select
+@app.get('/login')
+async def login(id:str=None, pw:str=None):
+    conn= connection()
+    curs = conn.cursor()
+    sql = 'select count(id) from user where id=%s and pw=%s'
+    curs.execute(sql,(id,pw))
+    rows = curs.fetchall()
+    conn.close()
+    print(rows[0][0])
+    return {'result' : rows[0][0]}
+
+
 
 if __name__ == "__main":
     import uvicorn
