@@ -60,6 +60,11 @@ dependencies:
   #dropdown
   dropdown_button2: ^2.3.9
 
+  #http
+  http: ^1.2.2
+
+  #getStorage
+  get_storage: ^2.1.1
 
 dev_dependencies:
   flutter_test:
