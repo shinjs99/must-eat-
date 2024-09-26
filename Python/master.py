@@ -57,13 +57,13 @@ async def get_file(file_name : str):
 
 # insert
 @app.get('/insert')
-async def insert(name:str=None, phone:str=None, latitude:str=None, longtitude:str=None, image:str=None, estimate:str=None, user_id:str =None):
+async def insert(name:str=None, phone:str=None, latitude:str=None, longtitude:str=None, image:str=None, estimate:str=None, rating : str=None, user_id:str =None):
     conn = connection()
     curs = conn.cursor()
     
     try:
-        sql = "insert into restaurant(name, phone, latitude, longtitude, image, estimate, user_id) values (%s,%s,%s,%s,%s,%s,%s)"
-        curs.execute(sql,(name,phone,latitude,longtitude,image,estimate,user_id))
+        sql = "insert into restaurant(name, phone, latitude, longtitude, image, estimate, rating,user_id) values (%s,%s,%s,%s,%s,%s,%s,%s)"
+        curs.execute(sql,(name,phone,latitude,longtitude,image,estimate,rating,user_id))
         conn.commit()
         conn.close()
         return {'result': "ok"}
@@ -89,13 +89,13 @@ async def upload_file(file:UploadFile=File(...)):
 
 # update only text
 @app.get('/update')
-async def update(seq = str,name:str=None, phone:str=None,estimate:str=None ):
+async def update(seq = str,name:str=None, phone:str=None,estimate:str=None, rating:str=None ):
     conn = connection()
     curs = conn.cursor()
     
     try:
-        sql = "update restaurant set name=%s, phone=%s, estimate=%s where seq=%s"
-        curs.execute(sql,(name,phone,estimate,seq))
+        sql = "update restaurant set name=%s, phone=%s, estimate=%s, rating=%s where seq=%s"
+        curs.execute(sql,(name,phone,estimate,rating,seq))
         conn.commit()
         conn.close()
         return {'result': "ok"}
@@ -106,13 +106,13 @@ async def update(seq = str,name:str=None, phone:str=None,estimate:str=None ):
 
 # update all
 @app.get('/updateAll')
-async def updateAll(seq = str,name:str=None, phone:str=None,image:str=None, estimate:str=None ):
+async def updateAll(seq = str,name:str=None, phone:str=None,image:str=None, estimate:str=None, rating: str=None ):
     conn = connection()
     curs = conn.cursor()
     
     try:
-        sql = "update restaurant set name=%s, phone=%s, image=%s, estimate=%s where seq=%s"
-        curs.execute(sql,(name,phone,image,estimate,seq))
+        sql = "update restaurant set name=%s, phone=%s, image=%s, estimate=%s, rating=%s where seq=%s"
+        curs.execute(sql,(name,phone,image,estimate,rating,seq))
         conn.commit()
         conn.close()
         return {'result': "ok"}

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -24,10 +25,10 @@ class _InsertPageState extends State<InsertPage> {
   late String grade;
   final box = GetStorage();
   late String userid;
-
+  late Color iconColor;
   XFile? imageFile;
   final ImagePicker picker = ImagePicker();
-
+  late double currentrationg;
   @override
   void initState() {
     super.initState();
@@ -38,6 +39,8 @@ class _InsertPageState extends State<InsertPage> {
     longitude = 0;
     checkLocationPermission();
     userid = box.read('id');
+    iconColor = Colors.black;
+    currentrationg = 0;
   }
 
   checkLocationPermission() async {
@@ -209,42 +212,58 @@ class _InsertPageState extends State<InsertPage> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
-              child: Row(
-                children: [
-                  const Text('별점 : ',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      )),
-                  ElevatedButton(
-                      onPressed: () {
-                        grade = '1';
-                      },
-                      child: const Text('1')),
-                  ElevatedButton(
-                      onPressed: () {
-                        grade = '2';
-                      },
-                      child: const Text('2')),
-                  ElevatedButton(
-                      onPressed: () {
-                        grade = '3';
-                      },
-                      child: const Text('3')),
-                  ElevatedButton(
-                      onPressed: () {
-                        grade = '4';
-                      },
-                      child: const Text('4')),
-                  ElevatedButton(
-                      onPressed: () {
-                        grade = '5';
-                      },
-                      child: const Text('5')),
-                ],
+            // Padding(
+            //   padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
+            //   child: Row(
+            //     children: [
+            //       const Text('별점 : ',
+            //           style: TextStyle(
+            //             fontSize: 15,
+            //             fontWeight: FontWeight.bold,
+            //           )),
+            //       ElevatedButton(
+            //           onPressed: () {
+            //             grade = '1';
+            //           },
+            //           child: const Text('1')),
+            //       ElevatedButton(
+            //           onPressed: () {
+            //             grade = '2';
+            //           },
+            //           child: const Text('2')),
+            //       ElevatedButton(
+            //           onPressed: () {
+            //             grade = '3';
+            //           },
+            //           child: const Text('3')),
+            //       ElevatedButton(
+            //           onPressed: () {
+            //             grade = '4';
+            //           },
+            //           child: const Text('4')),
+            //       ElevatedButton(
+            //           onPressed: () {
+            //             grade = '5';
+            //           },
+            //           child: const Text('5')),
+            //     ],
+            //   ),
+            // ),
+            RatingBar.builder(
+              initialRating: 3,
+              minRating: 1,
+              direction: Axis.horizontal,
+              allowHalfRating: true,
+              itemCount: 5,
+              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+              itemBuilder: (context, _) => Icon(
+                Icons.star,
+                color: Colors.amber,
               ),
+              onRatingUpdate: (rating) {
+                print(rating);
+                currentrationg =  rating;
+              },
             ),
             TextButton(
               onPressed: () {
@@ -266,6 +285,7 @@ class _InsertPageState extends State<InsertPage> {
     final XFile? pickedFile = await picker.pickImage(source: imageSource);
     if (pickedFile == null) {
       imageFile = null;
+      
     } else {
       imageFile = XFile(pickedFile.path);
     }
@@ -273,6 +293,7 @@ class _InsertPageState extends State<InsertPage> {
   }
 
   insertAction() async {
+    print(currentrationg);
     if (imageFile == null ||
         namecontroller.text.trim().isEmpty ||
         phonecontroller.text.trim().isEmpty ||
@@ -290,7 +311,7 @@ class _InsertPageState extends State<InsertPage> {
       // 2. 나머지 데이터 삽입
       final insertResponse = await http.get(
         Uri.parse(
-          'http://127.0.0.1:8000/insert?name=${namecontroller.text}&phone=${phonecontroller.text}&latitude=$latitude&longtitude=$longitude&image=${imageFile!.name}&estimate=${reviewcontroller.text}&user_id=$userid',
+          'http://127.0.0.1:8000/insert?name=${namecontroller.text}&phone=${phonecontroller.text}&latitude=$latitude&longtitude=$longitude&image=${imageFile!.name}&estimate=${reviewcontroller.text}&rating=${currentrationg.toString()}&user_id=$userid',
         ),
       );
       if (insertResponse.statusCode == 200) {
@@ -316,7 +337,6 @@ class _InsertPageState extends State<InsertPage> {
       ],
     );
   }
-}
 
 errorSnackBar(title, message) {
   Get.snackbar(title, message,
@@ -324,4 +344,5 @@ errorSnackBar(title, message) {
       duration: const Duration(seconds: 2),
       backgroundColor: Colors.red,
       colorText: Colors.black);
+}
 }

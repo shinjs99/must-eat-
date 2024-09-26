@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
@@ -18,7 +19,7 @@ class _EditPageState extends State<EditPage> {
   TextEditingController reviewconstroller = TextEditingController();
   late String latitude;
   late String longitude;
-  late String grade;
+  double currentrating = 0;
 
   XFile? imageFile;
   final ImagePicker picker = ImagePicker();
@@ -31,11 +32,11 @@ class _EditPageState extends State<EditPage> {
   @override
   void initState() {
     super.initState();
-    namecontroller.text = value[1];
-    phonecontroller.text = value[2];
+    namecontroller.text = value[2];
+    phonecontroller.text = value[3];
     reviewconstroller.text = value[7];
-    latitude = value[3];
-    longitude = value[4];
+    latitude = value[4];
+    longitude = value[5];
   }
 
   @override
@@ -73,7 +74,7 @@ class _EditPageState extends State<EditPage> {
                           height: 180,
                           child: Center(
                             child: imageFile == null
-                                ? const Text('Image')
+                                ? Image.network('http://127.0.0.1:8000/view/${value[6]}')
                                 : Image.file(File(imageFile!
                                     .path)), //imageFile은 ?로 되어있기에 !를 붙여준다.
                           ),
@@ -175,43 +176,59 @@ class _EditPageState extends State<EditPage> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
-                child: Row(
-                  children: [
-                    const Text('별점 : ',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    ElevatedButton(
-                        onPressed: () {
-                          grade = '1';
-                        },
-                        child: const Text('1')),
-                    ElevatedButton(
-                        onPressed: () {
-                          grade = '2';
-                        },
-                        child: const Text('2')),
-                    ElevatedButton(
-                        onPressed: () {
-                          grade = '3';
-                        },
-                        child: const Text('3')),
-                    ElevatedButton(
-                        onPressed: () {
-                          grade = '4';
-                        },
-                        child: const Text('4')),
-                    ElevatedButton(
-                        onPressed: () {
-                          grade = '5';
-                        },
-                        child: const Text('5')),
-                  ],
-                ),
+              // Padding(
+              //   padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
+              //   child: Row(
+              //     children: [
+              //       const Text('별점 : ',
+              //           style: TextStyle(
+              //             fontSize: 15,
+              //             fontWeight: FontWeight.bold,
+              //           )),
+              //       ElevatedButton(
+              //           onPressed: () {
+              //             grade = '1';
+              //           },
+              //           child: const Text('1')),
+              //       ElevatedButton(
+              //           onPressed: () {
+              //             grade = '2';
+              //           },
+              //           child: const Text('2')),
+              //       ElevatedButton(
+              //           onPressed: () {
+              //             grade = '3';
+              //           },
+              //           child: const Text('3')),
+              //       ElevatedButton(
+              //           onPressed: () {
+              //             grade = '4';
+              //           },
+              //           child: const Text('4')),
+              //       ElevatedButton(
+              //           onPressed: () {
+              //             grade = '5';
+              //           },
+              //           child: const Text('5')),
+              //     ],
+              //   ),
+              // ),
+              RatingBar.builder(
+              initialRating: double.parse(value[8]),
+              minRating: 1,
+              direction: Axis.horizontal,
+              allowHalfRating: true,
+              itemCount: 5,
+              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+              itemBuilder: (context, _) => Icon(
+                Icons.star,
+                color: Colors.amber,
               ),
+              onRatingUpdate: (rating) {
+                print(rating);
+                currentrating =  rating;
+              },
+            ),
               TextButton(
                 onPressed: () {
                   if (firstDisp == 0) {
@@ -236,8 +253,9 @@ class _EditPageState extends State<EditPage> {
   // --- Functions ---
   getImageFromGallery(ImageSource imagesource) async {
     final XFile? pickedFile = await picker.pickImage(source: imagesource);
-    imageFile = XFile(pickedFile!.path);
-    firstDisp = 1;
+      imageFile = XFile(pickedFile!.path);
+        firstDisp = 1;
+    
     setState(() {});
   }
 
@@ -248,7 +266,7 @@ class _EditPageState extends State<EditPage> {
 
   updateJSONData() async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/update?seq=${value[0]}&name=${value[1]}&phone=${value[2]}&estimate=${value[7]}');
+        'http://127.0.0.1:8000/update?seq=${value[0]}&name=${value[2]}&phone=${value[3]}&estimate=${value[7]}&rating=${currentrating.toString()}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -261,7 +279,7 @@ class _EditPageState extends State<EditPage> {
 
   updateJSONDataAll() async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/updateAll?seq=${value[0]}&name=${value[1]}&phone=${value[2]}&image=$filename&estimate=${value[7]}');
+        'http://127.0.0.1:8000/updateAll?seq=${value[0]}&name=${value[2]}&phone=${value[3]}&image=$filename&estimate=${value[7]}&rating=${currentrating.toString()}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];

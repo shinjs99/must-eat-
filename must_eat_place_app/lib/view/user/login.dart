@@ -20,13 +20,6 @@ class _LoginState extends State<Login> {
   TextEditingController idController = TextEditingController();
   TextEditingController pwController = TextEditingController();
   final box = GetStorage();
-
-  @override
-  void initState() {
-    super.initState();
-    box.write('id', "");
-  }
-
   @override
   void dispose() {
     box.erase();
@@ -72,7 +65,10 @@ class _LoginState extends State<Login> {
                   child: const Text('LogIn')),
             ),
             ElevatedButton(
-                onPressed: () => Get.to(const Signup()),
+                onPressed: (){
+                  controllerClear();
+                  Get.to(const Signup());
+                  },
                 child: const Text('SignUp')),
           ],
         ),
