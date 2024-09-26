@@ -77,7 +77,14 @@ class _SignupState extends State<Signup> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      check();
+                      if(idController.text.trim().isEmpty){
+                        idcheck='ID를 입력하세요';
+                        checkColor = Colors.red;
+                      }else{
+                      check();}
+                      setState(() {
+                        
+                      });
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.amber,
