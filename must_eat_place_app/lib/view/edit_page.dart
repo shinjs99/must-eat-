@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -294,7 +293,7 @@ class _EditPageState extends State<EditPage> {
     //get package SnackBar
     Get.snackbar("수정 실패", "다시 시도하세요",
         snackPosition: SnackPosition.BOTTOM, //기본값 = top
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
         backgroundColor: Theme.of(context).colorScheme.error,
         colorText: Theme.of(context).colorScheme.onError);
   }

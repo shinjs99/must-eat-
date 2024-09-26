@@ -272,10 +272,13 @@ class _InsertPageState extends State<InsertPage> {
     setState(() {});
   }
 
-  Future insertAction() async {
-    if (imageFile == null || namecontroller.text.trim().isEmpty ||
-        phonecontroller.text.trim().isEmpty || reviewcontroller.text.trim().isEmpty)
-        {return errorSnackBar('경고','모두 입력하세요');}
+  insertAction() async {
+    if (imageFile == null ||
+        namecontroller.text.trim().isEmpty ||
+        phonecontroller.text.trim().isEmpty ||
+        reviewcontroller.text.trim().isEmpty) {
+      return errorSnackBar('경고', '모두 입력하세요');
+    }
     // 1. 이미지 업로드
     var request = http.MultipartRequest(
         'POST', Uri.parse('http://127.0.0.1:8000/upload'));
@@ -294,7 +297,6 @@ class _InsertPageState extends State<InsertPage> {
         _showDialog();
       }
     }
-    
   }
 
   _showDialog() {
@@ -316,13 +318,10 @@ class _InsertPageState extends State<InsertPage> {
   }
 }
 
-errorSnackBar(title,message){ 
-  Get.snackbar(
-    title,
-    message,
-    snackPosition: SnackPosition.BOTTOM, 
-    duration: const Duration(seconds: 2),
-    backgroundColor: Colors.red,
-    colorText: Colors.black
-    );
+errorSnackBar(title, message) {
+  Get.snackbar(title, message,
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 2),
+      backgroundColor: Colors.red,
+      colorText: Colors.black);
 }

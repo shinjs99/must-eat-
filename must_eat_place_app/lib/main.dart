@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:must_eat_place_app/view/home.dart';
 import 'package:must_eat_place_app/view/user/login.dart';
 
 void main() {

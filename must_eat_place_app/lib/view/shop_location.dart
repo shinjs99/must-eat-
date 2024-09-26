@@ -11,8 +11,8 @@ class ShopLocation extends StatefulWidget {
 }
 
 class _ShopLocationState extends State<ShopLocation> {
-  late String latData; 
-  late String longData; 
+  late String latData;
+  late String longData;
   late MapController mapController;
 
   var mustEatData = Get.arguments ?? '__';
@@ -28,42 +28,44 @@ class _ShopLocationState extends State<ShopLocation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('맛집 위치'),
-      ),
-      body: flutterMap()
-    );
+        appBar: AppBar(
+          title: const Text('맛집 위치'),
+        ),
+        body: flutterMap());
   }
 
   // --- Function ---
   Widget flutterMap() {
-  return FlutterMap(
-    mapController: mapController,
-    options: MapOptions(
-        initialCenter: latlng.LatLng(double.parse(latData), double.parse(longData)), initialZoom: 17.0),
-    children: [
-      TileLayer(
-        urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-      ),
-      MarkerLayer(
-        markers: [
-          Marker(
-            width: 80,
-            height: 80,
-            point: latlng.LatLng(double.parse(latData), double.parse(longData)),
-            child: const Column(
-              children: [
-                Icon(
-                  Icons.pin_drop,
-                  size: 50,
-                  color: Colors.red,
-                )
-              ],
-            ),
-          )
-        ],
-      )
-    ],
-  );
-}
+    return FlutterMap(
+      mapController: mapController,
+      options: MapOptions(
+          initialCenter:
+              latlng.LatLng(double.parse(latData), double.parse(longData)),
+          initialZoom: 17.0),
+      children: [
+        TileLayer(
+          urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        ),
+        MarkerLayer(
+          markers: [
+            Marker(
+              width: 80,
+              height: 80,
+              point:
+                  latlng.LatLng(double.parse(latData), double.parse(longData)),
+              child: const Column(
+                children: [
+                  Icon(
+                    Icons.pin_drop,
+                    size: 50,
+                    color: Colors.red,
+                  )
+                ],
+              ),
+            )
+          ],
+        )
+      ],
+    );
+  }
 }

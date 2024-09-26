@@ -13,11 +13,10 @@ class LocationPicker extends StatefulWidget {
 
 class _LocationPickerState extends State<LocationPicker> {
   late Position currentPosition;
-  late double latitude; 
-  late double longitude; 
+  late double latitude;
+  late double longitude;
   late MapController mapController;
   late bool canRun;
-  
 
   @override
   void initState() {
@@ -69,24 +68,21 @@ class _LocationPickerState extends State<LocationPicker> {
         onPressed: () {
           print(latitude);
           print(longitude);
-          Get.back(
-            result: [latitude, longitude]
-          );
+          Get.back(result: [latitude, longitude]);
         },
       ),
     );
   }
 
-Widget flutterMap(){
+  Widget flutterMap() {
     return FlutterMap(
       mapController: mapController,
       options: MapOptions(
-        initialCenter: latlng.LatLng(latitude, longitude),
-        initialZoom: 17.0
-      ),
+          initialCenter: latlng.LatLng(latitude, longitude), initialZoom: 17.0),
       children: [
         TileLayer(
-          urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",  //map그리기
+          urlTemplate:
+              "https://tile.openstreetmap.org/{z}/{x}/{y}.png", //map그리기
         ),
         MarkerLayer(
           markers: [
@@ -100,10 +96,9 @@ Widget flutterMap(){
                     child: Text(
                       '위치',
                       style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black
-                      ),
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
                     ),
                   ),
                   Icon(
@@ -117,6 +112,6 @@ Widget flutterMap(){
           ],
         ),
       ],
-      );
+    );
   }
 }
