@@ -1,9 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:must_eat_place_app/view/edit_page.dart';
 import 'package:must_eat_place_app/view/insert_page.dart';
 import 'package:must_eat_place_app/view/shop_location.dart';
-import 'package:must_eat_place_app/vm/database_handler.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class Home extends StatefulWidget {
@@ -16,13 +17,15 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   // late List<String> items;
   // late String dropdownValue;
-  DatabaseHandler handler = DatabaseHandler();
+  // DatabaseHandler handler = DatabaseHandler();
+  List data = [];
 
   @override
   void initState() {
     super.initState();
     // items = ['전체','1','2','3','4','5'];
     // dropdownValue = items[0];
+    getJSONData();
   }
 
   @override
@@ -34,33 +37,33 @@ class _HomeState extends State<Home> {
         actions: [
           IconButton(
               onPressed: () => Get.to(() => const InsertPage())!
-                  .then((value) => reloadData()),
+                  .then((value) => getJSONData()),
               icon: const Icon(Icons.add)),
         ],
       ),
-      body: FutureBuilder(
-        future: handler.queryMustEat(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-                itemCount: snapshot.data!.length,
+      body: Center(
+        child: data.isEmpty
+        ? Text('맛집을 추가하세요')
+        : ListView.builder(
+                itemCount: data.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
                       Get.to(() => const ShopLocation(), arguments: [
-                        snapshot.data![index].latitude,
-                        snapshot.data![index].longitude
+                        data[index][4],
+                        data[index][5]
                       ])!
-                          .then((value) => reloadData());
+                          .then((value) => getJSONData());
                     },
                     child: Slidable(
                       endActionPane:
                           ActionPane(motion: const DrawerMotion(), children: [
                         SlidableAction(
                             flex: 1,
-                            onPressed: (context) => handler
-                                .deleteMustEat(snapshot.data![index].seq!)
-                                .then((value) => reloadData()),
+                            onPressed: (context) async {
+                              await removeData(data[index][0],data[index][6]);
+                              getJSONData();
+                            },
                             backgroundColor: Colors.red,
                             foregroundColor: Colors.white,
                             icon: Icons.delete,
@@ -72,15 +75,14 @@ class _HomeState extends State<Home> {
                             flex: 1,
                             onPressed: (context) {
                               Get.to(const EditPage(), arguments: [
-                                snapshot.data![index].seq,
-                                snapshot.data![index].image,
-                                snapshot.data![index].latitude,
-                                snapshot.data![index].longitude,
-                                snapshot.data![index].name,
-                                snapshot.data![index].phone,
-                                snapshot.data![index].review,
-                                snapshot.data![index].grade
-                              ])!.then((value) =>  reloadData());
+                                data[index][0],
+                                data[index][1],
+                                data[index][2],
+                                data[index][3],
+                                data[index][4],
+                                data[index][5],
+                                data[index][6],
+                              ])!.then((value) =>  getJSONData());
                             },
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
@@ -99,7 +101,7 @@ class _HomeState extends State<Home> {
                               SizedBox(
                                 width: 100,
                                 height: 100,
-                                child: Image.memory(snapshot.data![index].image),
+                                child: Image.memory(data[index][6]),
                               ),
                               SizedBox(
                                 width: 300,
@@ -109,13 +111,13 @@ class _HomeState extends State<Home> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Text(snapshot.data![index].name,
+                                      child: Text(data[index][2],
                                       style: const TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold
                                       ),),
                                     ),
-                                    Text(snapshot.data![index].phone,
+                                    Text(data[index][3],
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold
@@ -129,19 +131,52 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   );
-                });
-          } else {
-            return const Center(
-              child: Text('리스트를 추가 해주세요'),
-            );
-          }
-        },
-      ),
-    );
-  }
+                }
+              )
+          ));
+}
 
   // --- Functions ---
-  reloadData() {
-    setState(() {});
+
+  getJSONData()async{
+  var url = Uri.parse('http://127.0.0.1:8000/select');
+  var response = await http.get(url);
+  data.clear();
+  var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+  List result = dataConvertedJSON['results'];
+  data.addAll(result);
+  setState(() {});
+  }
+
+  removeData(seq, filename)async{
+  await deleteImage(filename);
+  var url = Uri.parse('http://127.0.0.1:8000/remove?seq=$seq');
+  var response = await http.get(url);
+  var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+  var result = dataConvertedJSON['result'];
+  if (result=='ok'){
+    showSnackbar('삭제완료','삭제되었습니다',Colors.green);
+  }else{
+    showSnackbar('삭제실패','다시시도하세요',Colors.red);
+  }
+  }
+  
+  showSnackbar(title,message,color){
+    Get.snackbar(
+    title,
+    message,
+   snackPosition: SnackPosition.BOTTOM,   //기본값 = top
+    duration: Duration(seconds: 2),
+    backgroundColor: color
+  );
+  }
+
+  deleteImage(String filename)async{
+    final response = await http.delete(Uri.parse('http://127.0.0.1:8000/deleteFile/$filename'));
+    if(response.statusCode==200){
+      print("Image deleted successfully");
+    }else{
+      print("Image deletion failed");
+    }
   }
 }
