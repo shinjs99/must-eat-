@@ -88,13 +88,13 @@ class _EditPageState extends State<EditPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       const Text('위도 : ',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                           )),
                       Text(latitude.toString()),
                       const Text('경도 : ',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                           )),
@@ -106,7 +106,7 @@ class _EditPageState extends State<EditPage> {
                 child: Row(
                   children: [
                     const Text('이름 : ',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         )),
@@ -127,7 +127,7 @@ class _EditPageState extends State<EditPage> {
                 child: Row(
                   children: [
                     const Text('전화 : ',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         )),
@@ -147,7 +147,7 @@ class _EditPageState extends State<EditPage> {
                 child: Row(
                   children: [
                     const Text('평가 : ',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         )),
@@ -169,7 +169,7 @@ class _EditPageState extends State<EditPage> {
                 child: Row(
                   children: [
                     const Text('별점 : ',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         )),

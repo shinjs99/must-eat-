@@ -135,7 +135,7 @@ class _InsertPageState extends State<InsertPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text('위도 : ',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold)),
                               Text(latitude.toString(),
@@ -148,7 +148,7 @@ class _InsertPageState extends State<InsertPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text('경도 : ',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold)),
                               Text(longitude.toString(),
@@ -165,7 +165,7 @@ class _InsertPageState extends State<InsertPage> {
                       child: Row(
                         children: [
                           const Text('이름 : ',
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.bold)),
                           SizedBox(
                             width: 300,
@@ -184,7 +184,7 @@ class _InsertPageState extends State<InsertPage> {
                       child: Row(
                         children: [
                           const Text('전화 : ',
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.bold)),
                           SizedBox(
                             width: 300,
@@ -202,7 +202,7 @@ class _InsertPageState extends State<InsertPage> {
                       child: Row(
                         children: [
                           const Text('평가 : ',
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.bold)),
                           SizedBox(
                             width: 300,
@@ -225,48 +225,48 @@ class _InsertPageState extends State<InsertPage> {
                 child: Row(
                   children: [
                     const Text('별점 : ',
-                        style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
                         )),
-                        ElevatedButton(
-                          onPressed: () {
-                            grade = '1';
-                          }
-                          ,child: const Text('1')),
-                        ElevatedButton(
-                          onPressed: () {
-                            grade = '2';
-                          }
-                          ,child: const Text('2')),
-                        ElevatedButton(
-                          onPressed: () {
-                            grade = '3';
-                          }
-                          ,child: const Text('3')),
-                        ElevatedButton(
-                          onPressed: () {
-                            grade = '4';
-                          }
-                          ,child: const Text('4')),
-                        ElevatedButton(
-                          onPressed: () {
-                            grade = '5';
-                          }
-                          ,child: const Text('5')),
+                    ElevatedButton(
+                        onPressed: () {
+                          grade = '1';
+                        },
+                        child: const Text('1')),
+                    ElevatedButton(
+                        onPressed: () {
+                          grade = '2';
+                        },
+                        child: const Text('2')),
+                    ElevatedButton(
+                        onPressed: () {
+                          grade = '3';
+                        },
+                        child: const Text('3')),
+                    ElevatedButton(
+                        onPressed: () {
+                          grade = '4';
+                        },
+                        child: const Text('4')),
+                    ElevatedButton(
+                        onPressed: () {
+                          grade = '5';
+                        },
+                        child: const Text('5')),
                   ],
                 ),
               ),
-                    TextButton(
-                      onPressed: () {
-                        insertAction();
-                      },
-                      child: const Text(
-                        '입력',
-                        style: TextStyle(
-                            backgroundColor: Colors.black, color: Colors.white),
-                      ),
-                    ),
+              TextButton(
+                onPressed: () {
+                  insertAction();
+                },
+                child: const Text(
+                  '입력',
+                  style: TextStyle(
+                      backgroundColor: Colors.black, color: Colors.white),
+                ),
+              ),
             ]),
           ),
         ));
