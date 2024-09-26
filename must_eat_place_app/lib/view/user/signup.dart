@@ -146,7 +146,7 @@ class _SignupState extends State<Signup> {
                     onPressed: () {
                       if (idController.text.trim().isEmpty ||
                           pwController.text.trim().isEmpty) {
-                        errorSnackBar('다시', '시도하세요');
+                        errorSnackBar('경고', 'ID와 Password를 모두 입력하세요');
                       } else {
                         userInsert();
                       }
@@ -203,7 +203,7 @@ class _SignupState extends State<Signup> {
         errorSnackBar('회원가입 실패', '다시 시도하세요');
       }
     } else {
-      errorSnackBar('다시', '다시');
+      errorSnackBar('경고', 'ID 중복확인이 필요합니다.');
     }
   }
 

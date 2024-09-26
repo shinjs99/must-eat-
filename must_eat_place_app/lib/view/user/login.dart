@@ -179,7 +179,7 @@ class _LoginState extends State<Login> {
                 controllerClear();
                 Get.to(const Home());
               },
-              child: const Text('Exit'))
+              child: const Text('확인'))
         ]);
   }
 
