@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -21,6 +22,8 @@ class _InsertPageState extends State<InsertPage> {
   late double longitude;
   late Position currentPosition;
   late String grade;
+  final box = GetStorage();
+  late String userid;
 
   XFile? imageFile;
   final ImagePicker picker = ImagePicker();
@@ -34,6 +37,7 @@ class _InsertPageState extends State<InsertPage> {
     latitude = 0;
     longitude = 0;
     checkLocationPermission();
+    userid = box.read('id');
   }
 
   checkLocationPermission() async {
@@ -269,8 +273,9 @@ class _InsertPageState extends State<InsertPage> {
   }
 
   Future insertAction() async {
-    if (imageFile == null) return;
-
+    if (imageFile == null || namecontroller.text.trim().isEmpty ||
+        phonecontroller.text.trim().isEmpty || reviewcontroller.text.trim().isEmpty)
+        {return errorSnackBar('경고','모두 입력하세요');}
     // 1. 이미지 업로드
     var request = http.MultipartRequest(
         'POST', Uri.parse('http://127.0.0.1:8000/upload'));
@@ -282,13 +287,14 @@ class _InsertPageState extends State<InsertPage> {
       // 2. 나머지 데이터 삽입
       final insertResponse = await http.get(
         Uri.parse(
-          'http://127.0.0.1:8000/insert?name=${namecontroller.text}&phone=${phonecontroller.text}&lat=$latitude&longtitude=$longitude&image=${imageFile!.name}&estimate=${reviewcontroller.text}&user_id=example_user',
+          'http://127.0.0.1:8000/insert?name=${namecontroller.text}&phone=${phonecontroller.text}&latitude=$latitude&longtitude=$longitude&image=${imageFile!.name}&estimate=${reviewcontroller.text}&user_id=$userid',
         ),
       );
       if (insertResponse.statusCode == 200) {
         _showDialog();
       }
     }
+    
   }
 
   _showDialog() {
@@ -308,4 +314,15 @@ class _InsertPageState extends State<InsertPage> {
       ],
     );
   }
+}
+
+errorSnackBar(title,message){ 
+  Get.snackbar(
+    title,
+    message,
+    snackPosition: SnackPosition.BOTTOM, 
+    duration: const Duration(seconds: 2),
+    backgroundColor: Colors.red,
+    colorText: Colors.black
+    );
 }

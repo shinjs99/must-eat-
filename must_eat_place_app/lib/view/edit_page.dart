@@ -17,8 +17,8 @@ class _EditPageState extends State<EditPage> {
   TextEditingController namecontroller = TextEditingController();
   TextEditingController phonecontroller = TextEditingController();
   TextEditingController reviewconstroller = TextEditingController();
-  late double latitude;
-  late double longitude;
+  late String latitude;
+  late String longitude;
   late String grade;
 
   XFile? imageFile;
@@ -325,7 +325,7 @@ class _EditPageState extends State<EditPage> {
   }
 
   updateActionAll() async {
-    await deleteImage(value[5]);
+    await deleteImage(value[6]);
     await uploadImage();
     updateJSONDataAll();
   }

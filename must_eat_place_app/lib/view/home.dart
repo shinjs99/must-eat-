@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:must_eat_place_app/view/edit_page.dart';
 import 'package:must_eat_place_app/view/insert_page.dart';
 import 'package:must_eat_place_app/view/shop_location.dart';
@@ -19,13 +20,17 @@ class _HomeState extends State<Home> {
   // late String dropdownValue;
   // DatabaseHandler handler = DatabaseHandler();
   List data = [];
+  final box =GetStorage();
+  late String userid;
 
   @override
   void initState() {
     super.initState();
     // items = ['전체','1','2','3','4','5'];
     // dropdownValue = items[0];
+    userid = box.read('id');
     getJSONData();
+
   }
 
   @override
@@ -82,6 +87,7 @@ class _HomeState extends State<Home> {
                                 data[index][4],
                                 data[index][5],
                                 data[index][6],
+                                data[index][7]
                               ])!.then((value) =>  getJSONData());
                             },
                             backgroundColor: Colors.green,
@@ -101,7 +107,7 @@ class _HomeState extends State<Home> {
                               SizedBox(
                                 width: 100,
                                 height: 100,
-                                child: Image.memory(data[index][6]),
+                                child: Image.network('http://127.0.0.1:8000/view/${data[index][6]}'),
                               ),
                               SizedBox(
                                 width: 300,
@@ -139,7 +145,7 @@ class _HomeState extends State<Home> {
   // --- Functions ---
 
   getJSONData()async{
-  var url = Uri.parse('http://127.0.0.1:8000/select');
+  var url = Uri.parse('http://127.0.0.1:8000/select?user_id=$userid');
   var response = await http.get(url);
   data.clear();
   var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
@@ -150,11 +156,11 @@ class _HomeState extends State<Home> {
 
   removeData(seq, filename)async{
   await deleteImage(filename);
-  var url = Uri.parse('http://127.0.0.1:8000/remove?seq=$seq');
+  var url = Uri.parse('http://127.0.0.1:8000/delete?seq=$seq');
   var response = await http.get(url);
   var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
   var result = dataConvertedJSON['result'];
-  if (result=='ok'){
+  if (result=='OK'){
     showSnackbar('삭제완료','삭제되었습니다',Colors.green);
   }else{
     showSnackbar('삭제실패','다시시도하세요',Colors.red);

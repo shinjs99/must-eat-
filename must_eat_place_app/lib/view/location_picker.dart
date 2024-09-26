@@ -67,6 +67,8 @@ class _LocationPickerState extends State<LocationPicker> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.location_on),
         onPressed: () {
+          print(latitude);
+          print(longitude);
           Get.back(
             result: [latitude, longitude]
           );

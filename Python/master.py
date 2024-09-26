@@ -38,7 +38,7 @@ async def select(user_id :str ):
     curs = conn.cursor()
 
     sql = 'select * from restaurant where user_id=%s' # 이름으로 정렬
-    curs.execute(sql,(id))
+    curs.execute(sql,(user_id))
     rows = curs.fetchall()
     conn.close()
     print(rows)
@@ -94,7 +94,7 @@ async def update(seq = str,name:str=None, phone:str=None,estimate:str=None ):
     curs = conn.cursor()
     
     try:
-        sql = "update address set name=%s, phone=%s, estimate=%s where seq=%s"
+        sql = "update restaurant set name=%s, phone=%s, estimate=%s where seq=%s"
         curs.execute(sql,(name,phone,estimate,seq))
         conn.commit()
         conn.close()
@@ -111,7 +111,7 @@ async def updateAll(seq = str,name:str=None, phone:str=None,image:str=None, esti
     curs = conn.cursor()
     
     try:
-        sql = "update address set name=%s, phone=%s, image=%s, estimate=%s where seq=%s"
+        sql = "update restaurant set name=%s, phone=%s, image=%s, estimate=%s where seq=%s"
         curs.execute(sql,(name,phone,image,estimate,seq))
         conn.commit()
         conn.close()
@@ -123,11 +123,6 @@ async def updateAll(seq = str,name:str=None, phone:str=None,image:str=None, esti
     
 
 # test data : yubee 333/ jangbee 111 / gwanwoo 123
-
-@app.get("/item/{item_id}")
-async def read_item(item_id : int, query_param : str = None): # FastAPI는 parameter받음 <-> Flask는 request 사용
-    return{ "item id" : item_id, "query_param" : query_param}
-
 # 회원가입 페이지 - id확인(중복검사) : select
 @app.get('/check')
 async def idcheck(id : str):
@@ -172,6 +167,33 @@ async def login(id:str=None, pw:str=None):
     print(rows[0][0])
     return {'result' : rows[0][0]}
 
+@app.get("/delete")
+async def delete(seq: str=None):
+    conn = connection()
+    curs = conn.cursor()
+
+    try:
+        sql = 'delete from restaurant where seq=%s'
+        curs.execute(sql,(seq))
+        conn.commit()
+        conn.close()
+        return {'result': 'OK'}
+    except Exception as e:
+        conn.close()
+        print("Error:",e)
+        return {'result':'Error'}
+    
+    
+@app.delete("/deleteFile/{file_name}")
+async def delete_file(file_name: str):
+    try:
+        file_path = os.path.join(UPLOAD_FOLDER, file_name)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        return {'result':'OK'}
+    except Exception as e:
+        print("Error:", e)
+        return {'result': 'Error'}
 
 
 if __name__ == "__main":

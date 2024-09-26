@@ -11,8 +11,8 @@ class ShopLocation extends StatefulWidget {
 }
 
 class _ShopLocationState extends State<ShopLocation> {
-  late double latData; 
-  late double longData; 
+  late String latData; 
+  late String longData; 
   late MapController mapController;
 
   var mustEatData = Get.arguments ?? '__';
@@ -40,7 +40,7 @@ class _ShopLocationState extends State<ShopLocation> {
   return FlutterMap(
     mapController: mapController,
     options: MapOptions(
-        initialCenter: latlng.LatLng(latData, longData), initialZoom: 17.0),
+        initialCenter: latlng.LatLng(double.parse(latData), double.parse(longData)), initialZoom: 17.0),
     children: [
       TileLayer(
         urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -50,7 +50,7 @@ class _ShopLocationState extends State<ShopLocation> {
           Marker(
             width: 80,
             height: 80,
-            point: latlng.LatLng(latData, longData),
+            point: latlng.LatLng(double.parse(latData), double.parse(longData)),
             child: const Column(
               children: [
                 Icon(
