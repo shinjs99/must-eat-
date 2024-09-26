@@ -16,7 +16,7 @@ class EditPage extends StatefulWidget {
 class _EditPageState extends State<EditPage> {
   TextEditingController namecontroller = TextEditingController();
   TextEditingController phonecontroller = TextEditingController();
-  TextEditingController reviewconstroller = TextEditingController();
+  TextEditingController reviewcontroller = TextEditingController();
   late String latitude;
   late String longitude;
   double currentrating = 0;
@@ -25,7 +25,6 @@ class _EditPageState extends State<EditPage> {
   final ImagePicker picker = ImagePicker();
 
   String filename = "";
-
   int firstDisp = 0;
   var value = Get.arguments ?? "__";
 
@@ -34,7 +33,7 @@ class _EditPageState extends State<EditPage> {
     super.initState();
     namecontroller.text = value[2];
     phonecontroller.text = value[3];
-    reviewconstroller.text = value[7];
+    reviewcontroller.text = value[7];
     latitude = value[4];
     longitude = value[5];
   }
@@ -43,177 +42,100 @@ class _EditPageState extends State<EditPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('맛집 수정'),
+        title: const Text(
+          '맛집 수정',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.amber,
       ),
       body: SingleChildScrollView(
-        child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TextButton(
+              // 이미지 선택 버튼
+              ElevatedButton(
                 onPressed: () => getImageFromGallery(ImageSource.gallery),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 child: const Text(
-                  'Image',
-                  style: TextStyle(
-                      backgroundColor: Colors.black,
-                      color: Colors.white,
-                      fontSize: 20),
+                  '이미지 선택',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: firstDisp == 0
-                    ? Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 180,
-                        decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Colors.black, width: 2.0)),
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 180,
-                          child: Center(
-                            child: imageFile == null
-                                ? Image.network(
-                                    'http://127.0.0.1:8000/view/${value[6]}')
-                                : Image.file(File(imageFile!
-                                    .path)), //imageFile은 ?로 되어있기에 !를 붙여준다.
-                          ),
-                        ),
+              const SizedBox(height: 20),
+
+              // 이미지 미리보기
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: imageFile == null
+                    ? Image.network(
+                        'http://127.0.0.1:8000/view/${value[6]}',
+                        fit: BoxFit.cover,
                       )
-                    : Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 200,
-                          color: Colors.grey,
-                          child: Center(
-                            child: imageFile == null
-                                ? const Text('이미지를 선택하세요')
-                                : Image.file(File(imageFile!.path)),
-                          ),
-                        ),
+                    : Image.file(
+                        File(imageFile!.path),
+                        fit: BoxFit.cover,
                       ),
               ),
+              const SizedBox(height: 20),
+
+              // 위도 및 경도 표시
               Padding(
-                padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
+                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                 child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      const Text('위도 : ',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          )),
-                      Text(latitude.toString()),
-                      const Text('경도 : ',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          )),
-                      Text(longitude.toString()),
-                    ]),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
-                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Text('이름 : ',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    SizedBox(
-                      width: 300,
-                      child: TextField(
-                        controller: namecontroller,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
+                    Text(
+                      '위도: $latitude',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '경도: $longitude',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
-                child: Row(
-                  children: [
-                    const Text('전화 : ',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    SizedBox(
-                      width: 300,
-                      child: TextField(
-                        controller: phonecontroller,
-                        decoration:
-                            const InputDecoration(border: OutlineInputBorder()),
-                      ),
-                    )
-                  ],
+
+              // 이름 입력 필드
+              buildTextField('이름', namecontroller),
+              const SizedBox(height: 20),
+
+              // 전화번호 입력 필드
+              buildTextField('전화', phonecontroller),
+              const SizedBox(height: 20),
+
+              // 리뷰 입력 필드
+              buildTextField('평가', reviewcontroller),
+              const SizedBox(height: 20),
+
+              // 별점 입력 필드
+              const Text(
+                '별점',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
-                child: Row(
-                  children: [
-                    const Text('평가 : ',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    SizedBox(
-                      width: 300,
-                      child: TextField(
-                        controller: reviewconstroller,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(
-                          borderRadius: BorderRadius.zero,
-                        )),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              // Padding(
-              //   padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
-              //   child: Row(
-              //     children: [
-              //       const Text('별점 : ',
-              //           style: TextStyle(
-              //             fontSize: 15,
-              //             fontWeight: FontWeight.bold,
-              //           )),
-              //       ElevatedButton(
-              //           onPressed: () {
-              //             grade = '1';
-              //           },
-              //           child: const Text('1')),
-              //       ElevatedButton(
-              //           onPressed: () {
-              //             grade = '2';
-              //           },
-              //           child: const Text('2')),
-              //       ElevatedButton(
-              //           onPressed: () {
-              //             grade = '3';
-              //           },
-              //           child: const Text('3')),
-              //       ElevatedButton(
-              //           onPressed: () {
-              //             grade = '4';
-              //           },
-              //           child: const Text('4')),
-              //       ElevatedButton(
-              //           onPressed: () {
-              //             grade = '5';
-              //           },
-              //           child: const Text('5')),
-              //     ],
-              //   ),
-              // ),
+              const SizedBox(height: 10),
               RatingBar.builder(
                 initialRating: double.parse(value[8]),
                 minRating: 1,
@@ -226,11 +148,13 @@ class _EditPageState extends State<EditPage> {
                   color: Colors.amber,
                 ),
                 onRatingUpdate: (rating) {
-                  print(rating);
                   currentrating = rating;
                 },
               ),
-              TextButton(
+              const SizedBox(height: 20),
+
+              // 수정 버튼
+              ElevatedButton(
                 onPressed: () {
                   if (firstDisp == 0) {
                     updateAction();
@@ -238,10 +162,16 @@ class _EditPageState extends State<EditPage> {
                     updateActionAll();
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 child: const Text(
-                  '수정',
-                  style: TextStyle(
-                      backgroundColor: Colors.black, color: Colors.white),
+                  '수정 완료',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
             ],
@@ -252,22 +182,39 @@ class _EditPageState extends State<EditPage> {
   }
 
   // --- Functions ---
+
+  Widget buildTextField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          filled: true,
+          fillColor: Colors.grey.shade200,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ),
+      ),
+    );
+  }
+
   getImageFromGallery(ImageSource imagesource) async {
     final XFile? pickedFile = await picker.pickImage(source: imagesource);
     imageFile = XFile(pickedFile!.path);
     firstDisp = 1;
-
     setState(() {});
   }
 
   updateAction() {
-    // filename이 필요하므로 filename을 얻기 전까지는 다음 단계를 멈춘다.
     updateJSONData();
   }
 
   updateJSONData() async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/update?seq=${value[0]}&name=${value[2]}&phone=${value[3]}&estimate=${value[7]}&rating=${currentrating.toString()}');
+        'http://127.0.0.1:8000/update?seq=${value[0]}&name=${namecontroller.text}&phone=${phonecontroller.text}&estimate=${reviewcontroller.text}&rating=${currentrating.toString()}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -280,7 +227,7 @@ class _EditPageState extends State<EditPage> {
 
   updateJSONDataAll() async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/updateAll?seq=${value[0]}&name=${value[2]}&phone=${value[3]}&image=$filename&estimate=${value[7]}&rating=${currentrating.toString()}');
+        'http://127.0.0.1:8000/updateAll?seq=${value[0]}&name=${namecontroller.text}&phone=${phonecontroller.text}&image=$filename&estimate=${reviewcontroller.text}&rating=${currentrating.toString()}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -293,50 +240,46 @@ class _EditPageState extends State<EditPage> {
 
   _showDialog() {
     Get.defaultDialog(
-        title: '수정 결과',
-        middleText: '수정이 완료되었습니다.',
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-        barrierDismissible: false,
-        actions: [
-          TextButton(
-            onPressed: () {
-              Get.back();
-              Get.back();
-            },
-            child: const Text('OK'),
-          ),
-        ]);
+      title: '수정 결과',
+      middleText: '수정이 완료되었습니다.',
+      barrierDismissible: false,
+      actions: [
+        TextButton(
+          onPressed: () {
+            Get.back();
+            Get.back();
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    );
   }
 
   errorSnackBar() {
-    //get package SnackBar
-    Get.snackbar("수정 실패", "다시 시도하세요",
-        snackPosition: SnackPosition.BOTTOM, //기본값 = top
-        duration: const Duration(seconds: 2),
-        backgroundColor: Theme.of(context).colorScheme.error,
-        colorText: Theme.of(context).colorScheme.onError);
+    Get.snackbar(
+      "수정 실패",
+      "다시 시도하세요",
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 2),
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   }
 
   uploadImage() async {
     var request = http.MultipartRequest(
-        //multipartrequest : file쪼개서 보내기 => list형태
-        'POST',
-        Uri.parse('http://127.0.0.1:8000/upload'));
+        'POST', Uri.parse('http://127.0.0.1:8000/upload'));
     var multipartFile =
         await http.MultipartFile.fromPath('file', imageFile!.path);
     request.files.add(multipartFile);
 
-    //for gettting file name
     List preFileName = imageFile!.path.split('/');
-    // print(preFileName[preFileName.length-1]); // imagefile이름
     filename = preFileName[preFileName.length - 1];
-    print('file name : $filename');
 
     var response = await request.send();
 
-    //200 = 정상작동
     if (response.statusCode == 200) {
-      print("Image upladed successfully");
+      print("Image uploaded successfully");
     } else {
       print("Image upload failed");
     }

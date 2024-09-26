@@ -28,7 +28,8 @@ class _InsertPageState extends State<InsertPage> {
   late Color iconColor;
   XFile? imageFile;
   final ImagePicker picker = ImagePicker();
-  late double currentrationg;
+  late double currentrating;
+
   @override
   void initState() {
     super.initState();
@@ -40,7 +41,7 @@ class _InsertPageState extends State<InsertPage> {
     checkLocationPermission();
     userid = box.read('id');
     iconColor = Colors.black;
-    currentrationg = 0;
+    currentrating = 0;
   }
 
   checkLocationPermission() async {
@@ -78,228 +79,183 @@ class _InsertPageState extends State<InsertPage> {
         backgroundColor: Colors.amber,
       ),
       body: SingleChildScrollView(
-        child: Center(
-          child: Column(children: [
-            TextButton(
-              onPressed: () => getImageFromDevice(ImageSource.gallery),
-              child: const Text(
-                'Image',
-                style: TextStyle(
-                    backgroundColor: Colors.black,
-                    color: Colors.white,
-                    fontSize: 20),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Container(
-                width: 250,
-                height: 180,
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 2.0)),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: 180,
-                  child: Center(
-                    child: imageFile == null
-                        ? const Text(
-                            'Image',
-                            style: TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
-                          )
-                        : Image.file(File(imageFile!.path)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // 이미지 선택 버튼
+              ElevatedButton(
+                onPressed: () => getImageFromDevice(ImageSource.gallery),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
+                child: const Text(
+                  '이미지 선택',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(
-                    onPressed: () async {
-                      var returnValues =
-                          await Get.to(() => const LocationPicker());
-                      latitude = returnValues[0];
-                      longitude = returnValues[1];
-                    },
-                    icon: const Icon(
-                      Icons.location_on,
-                      size: 40,
-                      color: Colors.red,
-                    ),
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('위도 : ',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold)),
-                      Text(latitude.toString(),
-                          style: const TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('경도 : ',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold)),
-                      Text(longitude.toString(),
-                          style: const TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
-              child: Row(
-                children: [
-                  const Text('이름 : ',
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                  SizedBox(
-                    width: 300,
-                    child: TextField(
-                      controller: namecontroller,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+              const SizedBox(height: 20),
+
+              // 이미지 미리보기
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: imageFile == null
+                    ? const Center(
+                        child: Text(
+                          '이미지를 선택하세요',
+                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                        ),
+                      )
+                    : Image.file(
+                        File(imageFile!.path),
+                        fit: BoxFit.cover,
                       ),
+              ),
+              const SizedBox(height: 20),
+
+              // 위치 확인 버튼 및 위도, 경도 표시
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        var returnValues =
+                            await Get.to(() => const LocationPicker());
+                        latitude = returnValues[0];
+                        longitude = returnValues[1];
+                        setState(() {});
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      icon: const Icon(Icons.location_on, color: Colors.white),
+                      label: const Text('위치 확인',
+                          style: TextStyle(color: Colors.white)),
                     ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('위도: $latitude',
+                            style: const TextStyle(fontSize: 16)),
+                        Text('경도: $longitude',
+                            style: const TextStyle(fontSize: 16)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // 이름 입력 필드
+              buildTextField('이름', namecontroller),
+              const SizedBox(height: 20),
+
+              // 전화번호 입력 필드
+              buildTextField('전화', phonecontroller),
+              const SizedBox(height: 20),
+
+              // 리뷰 입력 필드
+              buildTextField('평가', reviewcontroller),
+              const SizedBox(height: 20),
+
+              // 별점 입력 필드
+              const Text(
+                '별점',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              RatingBar.builder(
+                initialRating: 3,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) =>
+                    const Icon(Icons.star, color: Colors.amber),
+                onRatingUpdate: (rating) {
+                  currentrating = rating;
+                },
+              ),
+              const SizedBox(height: 20),
+
+              // 입력 버튼
+              ElevatedButton(
+                onPressed: () {
+                  insertAction();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ],
+                ),
+                child: const Text(
+                  '입력 완료',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
-              child: Row(
-                children: [
-                  const Text('전화 : ',
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                  SizedBox(
-                    width: 300,
-                    child: TextField(
-                      controller: phonecontroller,
-                      decoration:
-                          const InputDecoration(border: OutlineInputBorder()),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
-              child: Row(
-                children: [
-                  const Text('평가 : ',
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                  SizedBox(
-                    width: 300,
-                    child: TextField(
-                      controller: reviewcontroller,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(
-                        borderRadius: BorderRadius.zero,
-                      )),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            // Padding(
-            //   padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
-            //   child: Row(
-            //     children: [
-            //       const Text('별점 : ',
-            //           style: TextStyle(
-            //             fontSize: 15,
-            //             fontWeight: FontWeight.bold,
-            //           )),
-            //       ElevatedButton(
-            //           onPressed: () {
-            //             grade = '1';
-            //           },
-            //           child: const Text('1')),
-            //       ElevatedButton(
-            //           onPressed: () {
-            //             grade = '2';
-            //           },
-            //           child: const Text('2')),
-            //       ElevatedButton(
-            //           onPressed: () {
-            //             grade = '3';
-            //           },
-            //           child: const Text('3')),
-            //       ElevatedButton(
-            //           onPressed: () {
-            //             grade = '4';
-            //           },
-            //           child: const Text('4')),
-            //       ElevatedButton(
-            //           onPressed: () {
-            //             grade = '5';
-            //           },
-            //           child: const Text('5')),
-            //     ],
-            //   ),
-            // ),
-            RatingBar.builder(
-              initialRating: 3,
-              minRating: 1,
-              direction: Axis.horizontal,
-              allowHalfRating: true,
-              itemCount: 5,
-              itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-              itemBuilder: (context, _) => const Icon(
-                Icons.star,
-                color: Colors.amber,
-              ),
-              onRatingUpdate: (rating) {
-                print(rating);
-                currentrationg = rating;
-              },
-            ),
-            TextButton(
-              onPressed: () {
-                insertAction();
-              },
-              child: const Text(
-                '입력',
-                style: TextStyle(
-                    backgroundColor: Colors.black, color: Colors.white),
-              ),
-            ),
-          ]),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  getImageFromDevice(imageSource) async {
-    final XFile? pickedFile = await picker.pickImage(source: imageSource);
-    if (pickedFile == null) {
-      imageFile = null;
-    } else {
-      imageFile = XFile(pickedFile.path);
-    }
-    setState(() {});
+  // --- 입력 필드를 빌드하는 함수 ---
+  Widget buildTextField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          filled: true,
+          fillColor: Colors.grey.shade200,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ),
+      ),
+    );
   }
 
+  // 이미지 선택 함수
+  getImageFromDevice(imageSource) async {
+    final XFile? pickedFile = await picker.pickImage(source: imageSource);
+    setState(() {
+      imageFile = pickedFile;
+    });
+  }
+
+  // 입력 처리 함수
   insertAction() async {
-    print(currentrationg);
     if (imageFile == null ||
         namecontroller.text.trim().isEmpty ||
         phonecontroller.text.trim().isEmpty ||
         reviewcontroller.text.trim().isEmpty) {
       return errorSnackBar('경고', '모두 입력하세요');
     }
-    // 1. 이미지 업로드
+
+    // 이미지 업로드
     var request = http.MultipartRequest(
         'POST', Uri.parse('http://127.0.0.1:8000/upload'));
     request.files
@@ -307,10 +263,10 @@ class _InsertPageState extends State<InsertPage> {
     var response = await request.send();
 
     if (response.statusCode == 200) {
-      // 2. 나머지 데이터 삽입
+      // 나머지 데이터 삽입
       final insertResponse = await http.get(
         Uri.parse(
-          'http://127.0.0.1:8000/insert?name=${namecontroller.text}&phone=${phonecontroller.text}&latitude=$latitude&longtitude=$longitude&image=${imageFile!.name}&estimate=${reviewcontroller.text}&rating=${currentrationg.toString()}&user_id=$userid',
+          'http://127.0.0.1:8000/insert?name=${namecontroller.text}&phone=${phonecontroller.text}&latitude=$latitude&longitude=$longitude&image=${imageFile!.name}&estimate=${reviewcontroller.text}&rating=$currentrating&user_id=$userid',
         ),
       );
       if (insertResponse.statusCode == 200) {
@@ -319,11 +275,11 @@ class _InsertPageState extends State<InsertPage> {
     }
   }
 
+  // 입력 완료 다이얼로그
   _showDialog() {
     Get.defaultDialog(
       title: '입력 결과',
       middleText: '입력이 완료되었습니다.',
-      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       barrierDismissible: false,
       actions: [
         TextButton(
@@ -337,11 +293,15 @@ class _InsertPageState extends State<InsertPage> {
     );
   }
 
+  // 경고 스낵바
   errorSnackBar(title, message) {
-    Get.snackbar(title, message,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-        backgroundColor: Colors.red,
-        colorText: Colors.black);
+    Get.snackbar(
+      title,
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 2),
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   }
 }
