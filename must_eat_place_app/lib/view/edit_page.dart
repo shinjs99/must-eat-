@@ -1,11 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:must_eat_place_app/model/must_eat.dart';
-import 'package:must_eat_place_app/vm/database_handler.dart';
+import 'package:http/http.dart' as http;
 
 class EditPage extends StatefulWidget {
   const EditPage({super.key});
@@ -15,31 +14,29 @@ class EditPage extends StatefulWidget {
 }
 
 class _EditPageState extends State<EditPage> {
-  late TextEditingController namecontroller;
-  late TextEditingController phonecontroller;
-  late TextEditingController reviewconstroller;
+  TextEditingController namecontroller = TextEditingController();
+  TextEditingController phonecontroller = TextEditingController();
+  TextEditingController reviewconstroller = TextEditingController();
   late double latitude;
   late double longitude;
   late String grade;
-  DatabaseHandler handler = DatabaseHandler();
 
   XFile? imageFile;
   final ImagePicker picker = ImagePicker();
 
-  late int firstDisp;
+  String filename = "";
+
+  int firstDisp = 0;
   var value = Get.arguments ?? "__";
 
   @override
   void initState() {
     super.initState();
-    namecontroller = TextEditingController();
-    phonecontroller = TextEditingController();
-    reviewconstroller = TextEditingController();
-
-    firstDisp = 0;
-
-    latitude = value[2];
-    longitude = value[3];
+    namecontroller.text = value[1];
+    phonecontroller.text = value[2];
+    reviewconstroller.text = value[7];
+    latitude = value[3];
+    longitude = value[4];
   }
 
   @override
@@ -54,7 +51,7 @@ class _EditPageState extends State<EditPage> {
           child: Column(
             children: [
               TextButton(
-                onPressed: () => getImageFromDevice(ImageSource.gallery),
+                onPressed: () => getImageFromGallery(ImageSource.gallery),
                 child: const Text(
                   'Image',
                   style: TextStyle(
@@ -65,22 +62,37 @@ class _EditPageState extends State<EditPage> {
               ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: Container(
-                  width: 250,
-                  height: 180,
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 2.0)),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 180,
-                    child: Center(
-                      child: imageFile == null
-                          ? const Text('Image')
-                          : Image.file(File(
-                              imageFile!.path)), //imageFile은 ?로 되어있기에 !를 붙여준다.
-                    ),
-                  ),
-                ),
+                child: firstDisp == 0
+                    ? Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 180,
+                        decoration: BoxDecoration(
+                            border:
+                                Border.all(color: Colors.black, width: 2.0)),
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: 180,
+                          child: Center(
+                            child: imageFile == null
+                                ? const Text('Image')
+                                : Image.file(File(imageFile!
+                                    .path)), //imageFile은 ?로 되어있기에 !를 붙여준다.
+                          ),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 200,
+                          color: Colors.grey,
+                          child: Center(
+                            child: imageFile == null
+                                ? const Text('이미지를 선택하세요')
+                                : Image.file(File(imageFile!.path)),
+                          ),
+                        ),
+                      ),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
@@ -88,13 +100,13 @@ class _EditPageState extends State<EditPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       const Text('위도 : ',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                           )),
                       Text(latitude.toString()),
                       const Text('경도 : ',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                           )),
@@ -106,7 +118,7 @@ class _EditPageState extends State<EditPage> {
                 child: Row(
                   children: [
                     const Text('이름 : ',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         )),
@@ -127,7 +139,7 @@ class _EditPageState extends State<EditPage> {
                 child: Row(
                   children: [
                     const Text('전화 : ',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         )),
@@ -147,7 +159,7 @@ class _EditPageState extends State<EditPage> {
                 child: Row(
                   children: [
                     const Text('평가 : ',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         )),
@@ -203,7 +215,11 @@ class _EditPageState extends State<EditPage> {
               ),
               TextButton(
                 onPressed: () {
-                  updateAction();
+                  if (firstDisp == 0) {
+                    updateAction();
+                  } else {
+                    updateActionAll();
+                  }
                 },
                 child: const Text(
                   '수정',
@@ -219,33 +235,41 @@ class _EditPageState extends State<EditPage> {
   }
 
   // --- Functions ---
-  getImageFromDevice(imageSource) async {
-    final XFile? pickedFile = await picker.pickImage(source: imageSource);
-    if (pickedFile == null) {
-      imageFile = null;
-    } else {
-      imageFile = XFile(pickedFile.path);
-    }
+  getImageFromGallery(ImageSource imagesource) async {
+    final XFile? pickedFile = await picker.pickImage(source: imagesource);
+    imageFile = XFile(pickedFile!.path);
+    firstDisp = 1;
     setState(() {});
   }
 
-  Future updateAction() async {
-    //File Type을 Byte Type으로 변환하기
-    File imageFile1 = File(imageFile!.path); //이미지 제작
-    Uint8List getImage = await imageFile1.readAsBytes();
+  updateAction() {
+    // filename이 필요하므로 filename을 얻기 전까지는 다음 단계를 멈춘다.
+    updateJSONData();
+  }
 
-    var shopUpdate = MustEat(
-        seq: value[0],
-        image: getImage,
-        latitude: latitude,
-        longitude: longitude,
-        name: namecontroller.text.trim(),
-        phone: phonecontroller.text.trim(),
-        review: reviewconstroller.text.trim(),
-        grade: grade.toString());
-    int result = await handler.updateMustEat(shopUpdate);
-    if (result != 0) {
+  updateJSONData() async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/update?seq=${value[0]}&name=${value[1]}&phone=${value[2]}&estimate=${value[7]}');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    if (result == 'ok') {
       _showDialog();
+    } else {
+      errorSnackBar();
+    }
+  }
+
+  updateJSONDataAll() async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/updateAll?seq=${value[0]}&name=${value[1]}&phone=${value[2]}&image=$filename&estimate=${value[7]}');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    if (result == 'ok') {
+      _showDialog();
+    } else {
+      errorSnackBar();
     }
   }
 
@@ -264,5 +288,55 @@ class _EditPageState extends State<EditPage> {
             child: const Text('OK'),
           ),
         ]);
+  }
+
+  errorSnackBar() {
+    //get package SnackBar
+    Get.snackbar("수정 실패", "다시 시도하세요",
+        snackPosition: SnackPosition.BOTTOM, //기본값 = top
+        duration: Duration(seconds: 2),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        colorText: Theme.of(context).colorScheme.onError);
+  }
+
+  uploadImage() async {
+    var request = http.MultipartRequest(
+        //multipartrequest : file쪼개서 보내기 => list형태
+        'POST',
+        Uri.parse('http://127.0.0.1:8000/upload'));
+    var multipartFile =
+        await http.MultipartFile.fromPath('file', imageFile!.path);
+    request.files.add(multipartFile);
+
+    //for gettting file name
+    List preFileName = imageFile!.path.split('/');
+    // print(preFileName[preFileName.length-1]); // imagefile이름
+    filename = preFileName[preFileName.length - 1];
+    print('file name : $filename');
+
+    var response = await request.send();
+
+    //200 = 정상작동
+    if (response.statusCode == 200) {
+      print("Image upladed successfully");
+    } else {
+      print("Image upload failed");
+    }
+  }
+
+  updateActionAll() async {
+    await deleteImage(value[5]);
+    await uploadImage();
+    updateJSONDataAll();
+  }
+
+  deleteImage(String filename) async {
+    final response = await http
+        .delete(Uri.parse('http://127.0.0.1:8000/deleteFile/$filename'));
+    if (response.statusCode == 200) {
+      print("Image deleted successfully");
+    } else {
+      print("Image deletion failed");
+    }
   }
 }
