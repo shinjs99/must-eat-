@@ -19,7 +19,8 @@ class _EditPageState extends State<EditPage> {
   TextEditingController reviewcontroller = TextEditingController();
   late String latitude;
   late String longitude;
-  double currentrating = 0;
+  late double currentrating;
+  late double initialrating;
 
   XFile? imageFile;
   final ImagePicker picker = ImagePicker();
@@ -36,6 +37,8 @@ class _EditPageState extends State<EditPage> {
     reviewcontroller.text = value[7];
     latitude = value[4];
     longitude = value[5];
+    initialrating = double.parse(value[8]); // 기존 별점 가져오기
+    currentrating = initialrating; // 수정하지 않으면 기존 별점 유지
   }
 
   @override
@@ -137,7 +140,7 @@ class _EditPageState extends State<EditPage> {
               ),
               const SizedBox(height: 10),
               RatingBar.builder(
-                initialRating: double.parse(value[8]),
+                initialRating: initialrating,
                 minRating: 1,
                 direction: Axis.horizontal,
                 allowHalfRating: true,
@@ -148,7 +151,7 @@ class _EditPageState extends State<EditPage> {
                   color: Colors.amber,
                 ),
                 onRatingUpdate: (rating) {
-                  currentrating = rating;
+                  currentrating = rating; // 별점 변경 시 업데이트
                 },
               ),
               const SizedBox(height: 20),
@@ -208,32 +211,48 @@ class _EditPageState extends State<EditPage> {
     setState(() {});
   }
 
+  // 별점 선택하지 않았을 경우 기존 값을 유지하는 업데이트 로직
   updateAction() {
+    if (currentrating == 0) {
+      currentrating = initialrating; // 별점이 변경되지 않았을 경우 기존 별점 유지
+    }
     updateJSONData();
   }
 
   updateJSONData() async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/update?seq=${value[0]}&name=${namecontroller.text}&phone=${phonecontroller.text}&estimate=${reviewcontroller.text}&rating=${currentrating.toString()}');
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    var result = dataConvertedJSON['result'];
-    if (result == 'ok') {
-      _showDialog();
-    } else {
+        'http://127.0.0.1:8000/update?seq=${value[0]}&name=${namecontroller.text}&phone=${phonecontroller.text}&estimate=${reviewcontroller.text}&rating=$currentrating');
+    try {
+      var response = await http.get(url);
+      var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+      var result = dataConvertedJSON['result'];
+      if (result == 'ok') {
+        _showDialog();
+      } else {
+        errorSnackBar();
+      }
+    } catch (e) {
+      print('Error: $e');
       errorSnackBar();
     }
   }
 
+  // 이미지가 변경되었을 경우에만 이미지를 업데이트하는 로직
   updateJSONDataAll() async {
+    await uploadImage(); // 이미지 업로드 후
     var url = Uri.parse(
-        'http://127.0.0.1:8000/updateAll?seq=${value[0]}&name=${namecontroller.text}&phone=${phonecontroller.text}&image=$filename&estimate=${reviewcontroller.text}&rating=${currentrating.toString()}');
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    var result = dataConvertedJSON['result'];
-    if (result == 'ok') {
-      _showDialog();
-    } else {
+        'http://127.0.0.1:8000/updateAll?seq=${value[0]}&name=${namecontroller.text}&phone=${phonecontroller.text}&image=$filename&estimate=${reviewcontroller.text}&rating=$currentrating');
+    try {
+      var response = await http.get(url);
+      var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+      var result = dataConvertedJSON['result'];
+      if (result == 'ok') {
+        _showDialog();
+      } else {
+        errorSnackBar();
+      }
+    } catch (e) {
+      print('Error: $e');
       errorSnackBar();
     }
   }
@@ -267,28 +286,24 @@ class _EditPageState extends State<EditPage> {
   }
 
   uploadImage() async {
-    var request = http.MultipartRequest(
-        'POST', Uri.parse('http://127.0.0.1:8000/upload'));
-    var multipartFile =
-        await http.MultipartFile.fromPath('file', imageFile!.path);
-    request.files.add(multipartFile);
+    if (imageFile != null) {
+      var request = http.MultipartRequest(
+          'POST', Uri.parse('http://127.0.0.1:8000/upload'));
+      var multipartFile =
+          await http.MultipartFile.fromPath('file', imageFile!.path);
+      request.files.add(multipartFile);
 
-    List preFileName = imageFile!.path.split('/');
-    filename = preFileName[preFileName.length - 1];
+      List preFileName = imageFile!.path.split('/');
+      filename = preFileName[preFileName.length - 1];
 
-    var response = await request.send();
+      var response = await request.send();
 
-    if (response.statusCode == 200) {
-      print("Image uploaded successfully");
-    } else {
-      print("Image upload failed");
+      if (response.statusCode == 200) {
+        print("Image uploaded successfully");
+      } else {
+        print("Image upload failed");
+      }
     }
-  }
-
-  updateActionAll() async {
-    await deleteImage(value[6]);
-    await uploadImage();
-    updateJSONDataAll();
   }
 
   deleteImage(String filename) async {
@@ -299,5 +314,13 @@ class _EditPageState extends State<EditPage> {
     } else {
       print("Image deletion failed");
     }
+  }
+
+  updateActionAll() async {
+    if (value[6] != null && imageFile != null) {
+      await deleteImage(value[6]); // 기존 이미지를 삭제하고
+      await uploadImage(); // 새로운 이미지를 업로드한 후 업데이트 실행
+    }
+    updateJSONDataAll();
   }
 }
