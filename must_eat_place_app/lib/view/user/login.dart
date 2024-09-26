@@ -65,10 +65,10 @@ class _LoginState extends State<Login> {
                   child: const Text('LogIn')),
             ),
             ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   controllerClear();
                   Get.to(const Signup());
-                  },
+                },
                 child: const Text('SignUp')),
           ],
         ),

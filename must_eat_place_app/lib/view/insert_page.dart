@@ -255,14 +255,14 @@ class _InsertPageState extends State<InsertPage> {
               direction: Axis.horizontal,
               allowHalfRating: true,
               itemCount: 5,
-              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-              itemBuilder: (context, _) => Icon(
+              itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+              itemBuilder: (context, _) => const Icon(
                 Icons.star,
                 color: Colors.amber,
               ),
               onRatingUpdate: (rating) {
                 print(rating);
-                currentrationg =  rating;
+                currentrationg = rating;
               },
             ),
             TextButton(
@@ -285,7 +285,6 @@ class _InsertPageState extends State<InsertPage> {
     final XFile? pickedFile = await picker.pickImage(source: imageSource);
     if (pickedFile == null) {
       imageFile = null;
-      
     } else {
       imageFile = XFile(pickedFile.path);
     }
@@ -338,11 +337,11 @@ class _InsertPageState extends State<InsertPage> {
     );
   }
 
-errorSnackBar(title, message) {
-  Get.snackbar(title, message,
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 2),
-      backgroundColor: Colors.red,
-      colorText: Colors.black);
-}
+  errorSnackBar(title, message) {
+    Get.snackbar(title, message,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 2),
+        backgroundColor: Colors.red,
+        colorText: Colors.black);
+  }
 }

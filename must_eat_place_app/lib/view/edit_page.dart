@@ -74,7 +74,8 @@ class _EditPageState extends State<EditPage> {
                           height: 180,
                           child: Center(
                             child: imageFile == null
-                                ? Image.network('http://127.0.0.1:8000/view/${value[6]}')
+                                ? Image.network(
+                                    'http://127.0.0.1:8000/view/${value[6]}')
                                 : Image.file(File(imageFile!
                                     .path)), //imageFile은 ?로 되어있기에 !를 붙여준다.
                           ),
@@ -214,21 +215,21 @@ class _EditPageState extends State<EditPage> {
               //   ),
               // ),
               RatingBar.builder(
-              initialRating: double.parse(value[8]),
-              minRating: 1,
-              direction: Axis.horizontal,
-              allowHalfRating: true,
-              itemCount: 5,
-              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-              itemBuilder: (context, _) => Icon(
-                Icons.star,
-                color: Colors.amber,
+                initialRating: double.parse(value[8]),
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) => const Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rating) {
+                  print(rating);
+                  currentrating = rating;
+                },
               ),
-              onRatingUpdate: (rating) {
-                print(rating);
-                currentrating =  rating;
-              },
-            ),
               TextButton(
                 onPressed: () {
                   if (firstDisp == 0) {
@@ -253,9 +254,9 @@ class _EditPageState extends State<EditPage> {
   // --- Functions ---
   getImageFromGallery(ImageSource imagesource) async {
     final XFile? pickedFile = await picker.pickImage(source: imagesource);
-      imageFile = XFile(pickedFile!.path);
-        firstDisp = 1;
-    
+    imageFile = XFile(pickedFile!.path);
+    firstDisp = 1;
+
     setState(() {});
   }
 
