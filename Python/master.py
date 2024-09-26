@@ -41,7 +41,6 @@ async def select(user_id :str ):
     curs.execute(sql,(user_id))
     rows = curs.fetchall()
     conn.close()
-    print(rows)
 
     return { 'results' : rows}
         
@@ -57,13 +56,13 @@ async def get_file(file_name : str):
 
 # insert
 @app.get('/insert')
-async def insert(name:str=None, phone:str=None, latitude:str=None, longtitude:str=None, image:str=None, estimate:str=None, rating : str=None, user_id:str =None):
+async def insert(name:str=None, phone:str=None, latitude:str=None, longitude:str=None, image:str=None, estimate:str=None, rating : str=None, user_id:str =None):
     conn = connection()
     curs = conn.cursor()
     
     try:
-        sql = "insert into restaurant(name, phone, latitude, longtitude, image, estimate, rating,user_id) values (%s,%s,%s,%s,%s,%s,%s,%s)"
-        curs.execute(sql,(name,phone,latitude,longtitude,image,estimate,rating,user_id))
+        sql = "insert into restaurant(name, phone, latitude, longitude, image, estimate, rating,user_id) values (%s,%s,%s,%s,%s,%s,%s,%s)"
+        curs.execute(sql,(name,phone,latitude,longitude,image,estimate,rating,user_id))
         conn.commit()
         conn.close()
         return {'result': "ok"}
@@ -167,6 +166,7 @@ async def login(id:str=None, pw:str=None):
     print(rows[0][0])
     return {'result' : rows[0][0]}
 
+# db삭제
 @app.get("/delete")
 async def delete(seq: str=None):
     conn = connection()
@@ -184,6 +184,7 @@ async def delete(seq: str=None):
         return {'result':'Error'}
     
     
+    # 이미지 파일 삭제
 @app.delete("/deleteFile/{file_name}")
 async def delete_file(file_name: str):
     try:
@@ -194,6 +195,17 @@ async def delete_file(file_name: str):
     except Exception as e:
         print("Error:", e)
         return {'result': 'Error'}
+
+    # 평점 검색(drop down)
+@app.get('/sort')
+async def sort_rating(rating:str, user_id:str):
+    conn = connection()
+    curs = conn.cursor()
+    sql = 'select * from restaurant where rating like %s and user_id=%s'
+    curs.execute(sql,(rating,user_id))
+    rows = curs.fetchall()
+    conn.close()
+    return {'result' : rows}
 
 
 if __name__ == "__main":
