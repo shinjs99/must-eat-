@@ -41,7 +41,7 @@ class _InsertPageState extends State<InsertPage> {
     checkLocationPermission();
     userid = box.read('id');
     iconColor = Colors.black;
-    currentrating = 0;
+    currentrating = 3;
   }
 
   checkLocationPermission() async {
@@ -123,7 +123,7 @@ class _InsertPageState extends State<InsertPage> {
               ),
               const SizedBox(height: 20),
 
-              // 위치 확인 버튼 및 위도, 경도 표시
+              // 위치 선택 버튼 및 위도, 경도 표시
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 child: Row(
@@ -146,7 +146,7 @@ class _InsertPageState extends State<InsertPage> {
                         ),
                       ),
                       icon: const Icon(Icons.location_on, color: Colors.white),
-                      label: const Text('위치 확인',
+                      label: const Text('위치 선택',
                           style: TextStyle(color: Colors.white)),
                     ),
                     Column(
