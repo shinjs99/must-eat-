@@ -36,8 +36,8 @@ class _InsertPageState extends State<InsertPage> {
     namecontroller = TextEditingController();
     phonecontroller = TextEditingController();
     reviewcontroller = TextEditingController();
-    latitude = 0;
-    longitude = 0;
+    latitude = 0; // 기본 위도 설정
+    longitude = 0; // 기본 경도 설정
     checkLocationPermission();
     userid = box.read('id');
     iconColor = Colors.black;
@@ -133,8 +133,11 @@ class _InsertPageState extends State<InsertPage> {
                       onPressed: () async {
                         var returnValues =
                             await Get.to(() => const LocationPicker());
-                        latitude = returnValues[0];
-                        longitude = returnValues[1];
+                        // null 체크 및 기존 위치 유지
+                        if (returnValues != null) {
+                          latitude = returnValues[0];
+                          longitude = returnValues[1];
+                        }
                         setState(() {});
                       },
                       style: ElevatedButton.styleFrom(
@@ -146,7 +149,7 @@ class _InsertPageState extends State<InsertPage> {
                         ),
                       ),
                       icon: const Icon(Icons.location_on, color: Colors.white),
-                      label: const Text('위치 확인',
+                      label: const Text('위치 선택',
                           style: TextStyle(color: Colors.white)),
                     ),
                     Column(

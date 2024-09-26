@@ -28,10 +28,21 @@ class _ShopLocationState extends State<ShopLocation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('맛집 위치'),
+      appBar: AppBar(
+        title: const Text(
+          '맛집 위치',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
-        body: flutterMap());
+        backgroundColor: Colors.amber,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Get.back();
+          },
+        ),
+      ),
+      body: flutterMap(),
+    );
   }
 
   // --- Function ---
@@ -39,9 +50,10 @@ class _ShopLocationState extends State<ShopLocation> {
     return FlutterMap(
       mapController: mapController,
       options: MapOptions(
-          initialCenter:
-              latlng.LatLng(double.parse(latData), double.parse(longData)),
-          initialZoom: 17.0),
+        initialCenter:
+            latlng.LatLng(double.parse(latData), double.parse(longData)),
+        initialZoom: 17.0,
+      ),
       children: [
         TileLayer(
           urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -56,15 +68,23 @@ class _ShopLocationState extends State<ShopLocation> {
               child: const Column(
                 children: [
                   Icon(
-                    Icons.pin_drop,
+                    Icons.location_on,
                     size: 50,
                     color: Colors.red,
-                  )
+                  ),
+                  Text(
+                    '맛집 위치',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
                 ],
               ),
-            )
+            ),
           ],
-        )
+        ),
       ],
     );
   }

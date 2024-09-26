@@ -57,13 +57,13 @@ async def get_file(file_name : str):
 
 # insert
 @app.get('/insert')
-async def insert(name:str=None, phone:str=None, latitude:str=None, longtitude:str=None, image:str=None, estimate:str=None, rating : str=None, user_id:str =None):
+async def insert(name:str=None, phone:str=None, latitude:str=None, longitude:str=None, image:str=None, estimate:str=None, rating : str=None, user_id:str =None):
     conn = connection()
     curs = conn.cursor()
     
     try:
-        sql = "insert into restaurant(name, phone, latitude, longtitude, image, estimate, rating,user_id) values (%s,%s,%s,%s,%s,%s,%s,%s)"
-        curs.execute(sql,(name,phone,latitude,longtitude,image,estimate,rating,user_id))
+        sql = "insert into restaurant(name, phone, latitude, longitude, image, estimate, rating,user_id) values (%s,%s,%s,%s,%s,%s,%s,%s)"
+        curs.execute(sql,(name,phone,latitude,longitude,image,estimate,rating,user_id))
         conn.commit()
         conn.close()
         return {'result': "ok"}
