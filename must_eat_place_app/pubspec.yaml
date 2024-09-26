@@ -38,27 +38,23 @@ dependencies:
 
   # 이미지 가져오기
   image_picker: ^1.1.2
-
   # slider
   flutter_slidable: ^3.1.1
-
   # GPS
   geolocator: ^13.0.1
   flutter_map: ^7.0.2
   geocoding: ^3.0.0
-
   # 위도 경도
   latlong2: ^0.9.1
-
   # GetX
   get: ^4.6.6
-
   #sqlite
   sqflite: ^2.3.3+1
   path: ^1.9.0
-
   #dropdown
   dropdown_button2: ^2.3.9
+  # http
+  http: ^1.2.2
 
 
 dev_dependencies:
