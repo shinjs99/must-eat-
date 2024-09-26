@@ -181,7 +181,7 @@ class _EditPageState extends State<EditPage> {
                 child: Row(
                   children: [
                     const Text('별점 : ',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         )),
