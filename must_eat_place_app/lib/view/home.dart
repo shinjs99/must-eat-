@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:must_eat_place_app/view/edit_page.dart';
 import 'package:must_eat_place_app/view/insert_page.dart';
 import 'package:must_eat_place_app/view/shop_location.dart';
@@ -19,7 +20,7 @@ class _HomeState extends State<Home> {
   // late String dropdownValue;
   // DatabaseHandler handler = DatabaseHandler();
   List data = [];
-  final box =GetStorage();
+  final box = GetStorage();
   late String userid;
 
   @override
