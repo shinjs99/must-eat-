@@ -2,7 +2,16 @@
 author : Seob 
 Description : musteat home
 Date : 2024.09.25
-Usage :   
+UsageHomeView : http://127.0.0.1:8000/select?user_id=
+UsageInsert : http://127.0.0.1:8000/insert?name=?&phone=?&latitude=?&longitude=?&image=?&estimate=?&ratiing=?&user_id=?
+UsageUpdate : http://127.0.0.1:8000/update?seq=?&name=?&phone=?&estimate=?&rating=? 
+UsageUpdateAll : http://127.0.0.1:8000/updateAll?seq=?&name=?&phone=?&image=?&estimate=?&rating=?
+UsageSignup : http://127.0.0.1:8000/signup?id=?&pw=?
+UsageSignupId : http://127.0.0.1:8000/check?id=?
+UsageLogin : http://127.0.0.1:8000/login?id=&pw=?
+UsageDelete : http://127.0.0.1:8000/delete?seq=?
+UsageDropDown : http://127.0.0.1:8000/sort?rating=?&user_id=?
+
 '''
 
 from fastapi import FastAPI, File, UploadFile

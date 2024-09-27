@@ -43,141 +43,144 @@ class _EditPageState extends State<EditPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          '맛집 수정',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            '맛집 수정',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.amber,
         ),
-        backgroundColor: Colors.amber,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // 이미지 선택 버튼
-              ElevatedButton(
-                onPressed: () => getImageFromGallery(ImageSource.gallery),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // 이미지 선택 버튼
+                ElevatedButton(
+                  onPressed: () => getImageFromGallery(ImageSource.gallery),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    '이미지 선택',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
-                child: const Text(
-                  '이미지 선택',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // 이미지 미리보기
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: imageFile == null
-                    ? Image.network(
-                        'http://127.0.0.1:8000/view/${value[6]}',
-                        fit: BoxFit.cover,
-                      )
-                    : Image.file(
-                        File(imageFile!.path),
-                        fit: BoxFit.cover,
-                      ),
-              ),
-              const SizedBox(height: 20),
-
-              // 위도 및 경도 표시
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(
-                      '위도: $latitude',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      '경도: $longitude',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // 이름 입력 필드
-              buildTextField('이름', namecontroller),
-              const SizedBox(height: 20),
-
-              // 전화번호 입력 필드
-              buildTextField('전화', phonecontroller),
-              const SizedBox(height: 20),
-
-              // 리뷰 입력 필드
-              buildTextField('평가', reviewcontroller),
-              const SizedBox(height: 20),
-
-              // 별점 입력 필드
-              const Text(
-                '별점',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              RatingBar.builder(
-                initialRating: initialrating,
-                minRating: 1,
-                direction: Axis.horizontal,
-                allowHalfRating: true,
-                itemCount: 5,
-                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                itemBuilder: (context, _) => const Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                ),
-                onRatingUpdate: (rating) {
-                  currentrating = rating; // 별점 변경 시 업데이트
-                },
-              ),
-              const SizedBox(height: 20),
-
-              // 수정 버튼
-              ElevatedButton(
-                onPressed: () {
-                  if (firstDisp == 0) {
-                    updateAction();
-                  } else {
-                    updateActionAll();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
+                const SizedBox(height: 20),
+      
+                // 이미지 미리보기
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 200,
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: imageFile == null
+                      ? Image.network(
+                          'http://127.0.0.1:8000/view/${value[6]}',
+                          fit: BoxFit.cover,
+                        )
+                      : Image.file(
+                          File(imageFile!.path),
+                          fit: BoxFit.cover,
+                        ),
+                ),
+                const SizedBox(height: 20),
+      
+                // 위도 및 경도 표시
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(
+                        '위도: ${latitude.substring(0,9)}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '경도: ${longitude.substring(0,9)}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: const Text(
-                  '수정 완료',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+      
+                // 이름 입력 필드
+                buildTextField('이름', namecontroller),
+                const SizedBox(height: 20),
+      
+                // 전화번호 입력 필드
+                buildTextField('전화', phonecontroller),
+                const SizedBox(height: 20),
+      
+                // 리뷰 입력 필드
+                buildTextField('평가', reviewcontroller),
+                const SizedBox(height: 20),
+      
+                // 별점 입력 필드
+                const Text(
+                  '별점',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                RatingBar.builder(
+                  initialRating: initialrating,
+                  minRating: 1,
+                  direction: Axis.horizontal,
+                  allowHalfRating: true,
+                  itemCount: 5,
+                  itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  itemBuilder: (context, _) => const Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                  ),
+                  onRatingUpdate: (rating) {
+                    currentrating = rating; // 별점 변경 시 업데이트
+                  },
+                ),
+                const SizedBox(height: 20),
+      
+                // 수정 버튼
+                ElevatedButton(
+                  onPressed: () {
+                    if (firstDisp == 0) {
+                      updateAction();
+                    } else {
+                      updateActionAll();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    '수정 완료',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -206,8 +209,10 @@ class _EditPageState extends State<EditPage> {
 
   getImageFromGallery(ImageSource imagesource) async {
     final XFile? pickedFile = await picker.pickImage(source: imagesource);
+    if(pickedFile != null){
     imageFile = XFile(pickedFile!.path);
     firstDisp = 1;
+    }
     setState(() {});
   }
 

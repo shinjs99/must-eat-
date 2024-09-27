@@ -45,7 +45,10 @@ class _HomeState extends State<Home> {
         actions: [
           IconButton(
             onPressed: () => Get.to(() => const InsertPage())!
-                .then((value) => getJSONData()),
+                .then((value){ 
+                  ratingValue=rating[0];
+                  getJSONData();}),
+                  
             icon: const Icon(Icons.add),
           ),
         ],
@@ -125,6 +128,7 @@ class _HomeState extends State<Home> {
                                 onPressed: (context) async {
                                   await removeData(
                                       data[index][0], data[index][6]);
+                                      ratingValue=rating[0];
                                   getJSONData();
                                 },
                                 backgroundColor: Colors.red,
@@ -154,7 +158,9 @@ class _HomeState extends State<Home> {
                                       data[index][8], //rating
                                     ],
                                   )!
-                                      .then((value) => getJSONData());
+                                      .then((value){ 
+                                        ratingValue=rating[0];
+                                        getJSONData();});
                                 },
                                 backgroundColor: Colors.green,
                                 foregroundColor: Colors.white,

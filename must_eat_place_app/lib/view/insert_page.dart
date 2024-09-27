@@ -70,149 +70,152 @@ class _InsertPageState extends State<InsertPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Padding(
-          padding: EdgeInsets.all(10.0),
-          child: Text('맛집 추가'),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Text('맛집 추가'),
+          ),
+          backgroundColor: Colors.amber,
         ),
-        backgroundColor: Colors.amber,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // 이미지 선택 버튼
-              ElevatedButton(
-                onPressed: () => getImageFromDevice(ImageSource.gallery),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // 이미지 선택 버튼
+                ElevatedButton(
+                  onPressed: () => getImageFromDevice(ImageSource.gallery),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    '이미지 선택',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
-                child: const Text(
-                  '이미지 선택',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // 이미지 미리보기
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: imageFile == null
-                    ? const Center(
-                        child: Text(
-                          '이미지를 선택하세요',
-                          style: TextStyle(fontSize: 18, color: Colors.grey),
-                        ),
-                      )
-                    : Image.file(
-                        File(imageFile!.path),
-                        fit: BoxFit.cover,
-                      ),
-              ),
-              const SizedBox(height: 20),
-
-              // 위치 선택 버튼 및 위도, 경도 표시
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        var returnValues =
-                            await Get.to(() => const LocationPicker());
-                        latitude = returnValues[0];
-                        longitude = returnValues[1];
-                        setState(() {});
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 20),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      icon: const Icon(Icons.location_on, color: Colors.white),
-                      label: const Text('위치 선택',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('위도: $latitude',
-                            style: const TextStyle(fontSize: 16)),
-                        Text('경도: $longitude',
-                            style: const TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // 이름 입력 필드
-              buildTextField('이름', namecontroller),
-              const SizedBox(height: 20),
-
-              // 전화번호 입력 필드
-              buildTextField('전화', phonecontroller),
-              const SizedBox(height: 20),
-
-              // 리뷰 입력 필드
-              buildTextField('평가', reviewcontroller),
-              const SizedBox(height: 20),
-
-              // 별점 입력 필드
-              const Text(
-                '별점',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              RatingBar.builder(
-                initialRating: 3,
-                minRating: 1,
-                direction: Axis.horizontal,
-                allowHalfRating: true,
-                itemCount: 5,
-                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                itemBuilder: (context, _) =>
-                    const Icon(Icons.star, color: Colors.amber),
-                onRatingUpdate: (rating) {
-                  currentrating = rating;
-                },
-              ),
-              const SizedBox(height: 20),
-
-              // 입력 버튼
-              ElevatedButton(
-                onPressed: () {
-                  insertAction();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
+                const SizedBox(height: 20),
+      
+                // 이미지 미리보기
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 200,
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: imageFile == null
+                      ? const Center(
+                          child: Text(
+                            '이미지를 선택하세요',
+                            style: TextStyle(fontSize: 18, color: Colors.grey),
+                          ),
+                        )
+                      : Image.file(
+                          File(imageFile!.path),
+                          fit: BoxFit.cover,
+                        ),
+                ),
+                const SizedBox(height: 20),
+      
+                // 위치 선택 버튼 및 위도, 경도 표시
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          var returnValues =
+                              await Get.to(() => const LocationPicker());
+                          latitude = returnValues[0];
+                          longitude = returnValues[1];
+                          setState(() {});
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        icon: const Icon(Icons.location_on, color: Colors.white),
+                        label: const Text('위치 선택',
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('위도: $latitude',
+                              style: const TextStyle(fontSize: 16)),
+                          Text('경도: $longitude',
+                              style: const TextStyle(fontSize: 16)),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                child: const Text(
-                  '입력 완료',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+      
+                // 이름 입력 필드
+                buildTextField('이름', namecontroller),
+                const SizedBox(height: 20),
+      
+                // 전화번호 입력 필드
+                buildTextField('전화', phonecontroller),
+                const SizedBox(height: 20),
+      
+                // 리뷰 입력 필드
+                buildTextField('평가', reviewcontroller),
+                const SizedBox(height: 20),
+      
+                // 별점 입력 필드
+                const Text(
+                  '별점',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                RatingBar.builder(
+                  initialRating: 3,
+                  minRating: 1,
+                  direction: Axis.horizontal,
+                  allowHalfRating: true,
+                  itemCount: 5,
+                  itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  itemBuilder: (context, _) =>
+                      const Icon(Icons.star, color: Colors.amber),
+                  onRatingUpdate: (rating) {
+                    currentrating = rating;
+                  },
+                ),
+                const SizedBox(height: 20),
+      
+                // 입력 버튼
+                ElevatedButton(
+                  onPressed: () {
+                    insertAction();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    '입력 완료',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

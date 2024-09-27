@@ -27,124 +27,127 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          '로그인',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            '로그인',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.amber,
         ),
-        centerTitle: true,
-        backgroundColor: Colors.amber,
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // 로고 또는 이미지 삽입 (선택 사항)
-                Container(
-                  margin: const EdgeInsets.only(bottom: 40),
-                  child: Image.asset(
-                    'images/logo.jpg', // 로고 경로 (있을 경우)
-                    height: 250,
-                    width: 350,
-                  ),
-                ),
-
-                // ID 입력 필드
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: TextField(
-                    controller: idController,
-                    maxLength: 10,
-                    decoration: InputDecoration(
-                      labelText: 'ID를 입력하세요',
-                      labelStyle: const TextStyle(fontSize: 16),
-                      filled: true,
-                      fillColor: Colors.grey.shade200,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      prefixIcon: const Icon(Icons.person),
+        body: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // 로고 또는 이미지 삽입 (선택 사항)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 40),
+                    child: Image.asset(
+                      'images/logo.jpg', // 로고 경로 (있을 경우)
+                      height: 250,
+                      width: 350,
                     ),
                   ),
-                ),
-
-                // 패스워드 입력 필드
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: TextField(
-                    controller: pwController,
-                    obscureText: true,
-                    maxLength: 16,
-                    decoration: InputDecoration(
-                      labelText: '패스워드를 입력하세요',
-                      labelStyle: const TextStyle(fontSize: 16),
-                      filled: true,
-                      fillColor: Colors.grey.shade200,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+      
+                  // ID 입력 필드
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: TextField(
+                      controller: idController,
+                      maxLength: 10,
+                      decoration: InputDecoration(
+                        labelText: 'ID를 입력하세요',
+                        labelStyle: const TextStyle(fontSize: 16),
+                        filled: true,
+                        fillColor: Colors.grey.shade200,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        prefixIcon: const Icon(Icons.person),
                       ),
-                      prefixIcon: const Icon(Icons.lock),
                     ),
                   ),
-                ),
-
-                // 로그인 버튼
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: SizedBox(
+      
+                  // 패스워드 입력 필드
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: TextField(
+                      controller: pwController,
+                      obscureText: true,
+                      maxLength: 16,
+                      decoration: InputDecoration(
+                        labelText: '패스워드를 입력하세요',
+                        labelStyle: const TextStyle(fontSize: 16),
+                        filled: true,
+                        fillColor: Colors.grey.shade200,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        prefixIcon: const Icon(Icons.lock),
+                      ),
+                    ),
+                  ),
+      
+                  // 로그인 버튼
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (idController.text.trim().isEmpty ||
+                              pwController.text.trim().isEmpty) {
+                            errorSnackBar('경고', 'ID와 패스워드를 입력하세요');
+                          } else {
+                            loginButton();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.amber,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          '로그인',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ),
+                  ),
+      
+                  // 회원가입 버튼
+                  SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (idController.text.trim().isEmpty ||
-                            pwController.text.trim().isEmpty) {
-                          errorSnackBar('경고', 'ID와 패스워드를 입력하세요');
-                        } else {
-                          loginButton();
-                        }
+                        controllerClear();
+                        Get.to(const Signup());
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber,
+                        backgroundColor: Colors.grey.shade200,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       child: const Text(
-                        '로그인',
-                        style: TextStyle(fontSize: 18),
+                        '회원가입',
+                        style: TextStyle(fontSize: 18, color: Colors.black),
                       ),
                     ),
                   ),
-                ),
-
-                // 회원가입 버튼
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      controllerClear();
-                      Get.to(const Signup());
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.shade200,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      '회원가입',
-                      style: TextStyle(fontSize: 18, color: Colors.black),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
